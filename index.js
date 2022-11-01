@@ -16,8 +16,16 @@ const client = new MongoClient(uri, {
 });
 async function run(){
   try{
-        await client.connect();
-
+       const servicesCollection = client
+         .db("warehouse-managment")
+         .collection("services");
+    await client.connect();
+    //services collction
+    app.get("/services", async (req, res) => {
+      const cursor = servicesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
   }
   finally{
 
