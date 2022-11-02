@@ -5,7 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 app.use(cors());
 app.use(express.json());
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.xsnumx1.mongodb.net/?retryWrites=true&w=majority`;
@@ -16,15 +16,31 @@ const client = new MongoClient(uri, {
 });
 async function run(){
   try{
-       const servicesCollection = client
-         .db("warehouse-managment")
-         .collection("services");
+    const servicesCollection = client
+      .db("warehouse-managment")
+      .collection("services");
+    const productsCollection = client
+      .db("warehouse-managment")
+      .collection("products");
     await client.connect();
     //services collction
     app.get("/services", async (req, res) => {
       const cursor = servicesCollection.find();
       const result = await cursor.toArray();
       res.send(result);
+    });
+    //products collction
+    app.get("/products", async (req, res) => {
+      const cursor = productsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    //details
+    app.get("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const product = await productsCollection.findOne(query);
+      res.send(product);
     });
   }
   finally{
