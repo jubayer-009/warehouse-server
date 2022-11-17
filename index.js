@@ -51,7 +51,7 @@ async function run(){
       const updatedDoc = {
         $set: updateQuantity,
       };
-      const result = await productsCollection.updateOne(
+      const result = await productsCollection.updateMany(
         filter,
         updatedDoc,
         options
@@ -59,6 +59,7 @@ async function run(){
       res.send(result);
       console.log(updatedDoc);
     });
+   
   }
   finally{
 
