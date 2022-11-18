@@ -22,9 +22,7 @@ async function run(){
     const productsCollection = client
       .db("warehouse-managment")
       .collection("products");
-    const cartCollection = client
-      .db("warehouse-managment")
-      .collection("cart");
+    const cartCollection = client.db("warehouse-managment").collection("cart");
     await client.connect();
     //services collction
     app.get("/services", async (req, res) => {
@@ -40,17 +38,15 @@ async function run(){
     });
     //cart collction
     app.post("/cart", async (req, res) => {
-       const data = req.body;
-       const result = await cartCollection.insertOne(data);
-       res.send(result);
-     
+      const data = req.body;
+      const result = await cartCollection.insertOne(data);
+      res.send(result);
     });
     //get cart collction
     app.get("/cart", async (req, res) => {
-        const cursor = cartCollection.find();
-        const result = await cursor.toArray();
-       res.send(result);
-     
+      const cursor = cartCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
     });
     //details
     app.get("/products/:id", async (req, res) => {
@@ -61,7 +57,7 @@ async function run(){
     });
     //update quantity
     app.put("/products/:id", async (req, res) => {
-        const id = req.params.id;
+      const id = req.params.id;
       const updateQuantity = req.body;
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
@@ -76,7 +72,21 @@ async function run(){
       res.send(result);
       console.log(updatedDoc);
     });
-   
+    //order by email
+    app.get("/cartproduct", async (req, res) => {
+      const email = req.query.email;
+
+      const query = {email:email};
+      const cartProduct = await cartCollection.find(query).toArray();
+      res.send(cartProduct);
+    });
+    //delete cart item
+     app.delete("/cartproduct/:id", async (req, res) => {
+       const id = req.params.id;
+       const filter = { _id: ObjectId(id) };
+       const result = await cartCollection.deleteOne(filter);
+       res.send(result);
+     });
   }
   finally{
 
